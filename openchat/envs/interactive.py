@@ -3,6 +3,7 @@ import sys
 import torch
 import gc
 import os
+import json
 
 from openchat.base.envs.base import BaseEnvironment
 from openchat.base import (
@@ -35,8 +36,8 @@ class InteractiveEnvironment(BaseEnvironment):
         self.bot_color = bot_color
         self.special_color = special_color
         self.system_color = system_color
-        self.path_to_script = os.path.dirname(os.path.abspath(__file__))
-        self.my_log_filename = os.path.join(self.path_to_script, "OpenChatLogger.txt")
+        self.path_to_script = os.path.dirname(r"C:\Users\Thomas\AppData\Roaming\xVASynth\realTimeTTS")
+        self.my_log_filename = os.path.join(self.path_to_script, "xVASynthText.json")
 
     def start(self, agent: BaseAgent):
 
@@ -108,9 +109,22 @@ class InteractiveEnvironment(BaseEnvironment):
                 f"[{agent.name.upper()}]: {bot_message}",
                 color=self.bot_color,
             )
+            xVAJsonText = {
+                "done": False,
+                "ffmpeg_pitchMult": 1,
+                "ffmpeg_tempo": 1.0,
+                "gameId": "overwatch",
+                "pad_end": 200,
+                "pad_start": 0,
+                "text": str({bot_message}),
+                "use_ffmpeg": True,
+                "voiceId": "ow_dva",
+                "vol": 0.9990000396966935
+            }
             logger = open(self.my_log_filename,"w")
-            logger.write(str({bot_message}))
+            logger.write(json.dumps(xVAJsonText,indent=4))
             logger.close()
+
 
             self.add_bot_message(self.user_id, bot_message)
             gc.collect()
