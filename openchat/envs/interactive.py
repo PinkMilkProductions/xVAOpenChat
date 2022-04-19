@@ -2,6 +2,7 @@ import random
 import sys
 import torch
 import gc
+import os
 
 from openchat.base.envs.base import BaseEnvironment
 from openchat.base import (
@@ -34,6 +35,8 @@ class InteractiveEnvironment(BaseEnvironment):
         self.bot_color = bot_color
         self.special_color = special_color
         self.system_color = system_color
+        self.path_to_script = os.path.dirname(os.path.abspath(__file__))
+        self.my_log_filename = os.path.join(self.path_to_script, "OpenChatLogger.txt")
 
     def start(self, agent: BaseAgent):
 
@@ -105,6 +108,9 @@ class InteractiveEnvironment(BaseEnvironment):
                 f"[{agent.name.upper()}]: {bot_message}",
                 color=self.bot_color,
             )
+            logger = open(self.my_log_filename,"w")
+            logger.write(str({bot_message}))
+            logger.close()
 
             self.add_bot_message(self.user_id, bot_message)
             gc.collect()
