@@ -38,6 +38,7 @@ class InteractiveEnvironment(BaseEnvironment):
         self.system_color = system_color
         #self.path_to_script = os.path.dirname(r"C:\Users\Thomas\AppData\Roaming\xVASynth\realTimeTTS")
         #self.my_log_filename = os.path.join(self.path_to_script, "xVASynthText.json")
+        self.persona_settings = ["My name is Bob.", "I am a skooma dealer.", "I am addicted to skooma.", "I am an imperial male.", "I live in the land of Skyrim.", "I live in the village of Riverwood",".done"]
 
     def start(self, agent: BaseAgent):
 
@@ -192,15 +193,18 @@ class InteractiveEnvironment(BaseEnvironment):
 
     def pre_dialog_for_convai2(self, agent):
         cprint(
-            f"[SYSTEM]: Please input [{agent.name.upper()}]'s perosna.\n"
+            f"[SYSTEM]: Please input [{agent.name.upper()}]'s persona.\n"
             f"[SYSTEM]: Enter '.done' if you want to end input persona.\n",
             color=self.system_color)
 
-        while True:
-            _persona = cinput(
-                f"[{agent.name.upper()}'s PERSONA]: ",
-                color=self.special_color,
-            )
+        for x in self.persona_settings:
+        #while True:
+            #_persona = cinput(
+             #   f"[{agent.name.upper()}'s PERSONA]: ",
+              #  color=self.special_color,
+            #)
+
+            _persona = x
 
             if _persona == ".done":
                 cprint(
