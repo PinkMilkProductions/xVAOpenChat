@@ -4,6 +4,7 @@ import torch
 import gc
 import os
 import json
+import speech_recognition as sr
 
 from openchat.base.envs.base import BaseEnvironment
 from openchat.base import (
@@ -36,6 +37,9 @@ class InteractiveEnvironment(BaseEnvironment):
         self.bot_color = bot_color
         self.special_color = special_color
         self.system_color = system_color
+        self.recognizer = sr.Recognizer()
+        self.microphone = sr.Microphone()
+        self.PROMPT_LIMIT = 5
         #self.path_to_script = os.path.dirname(r"C:\Users\Thomas\AppData\Roaming\xVASynth\realTimeTTS")
         #self.my_log_filename = os.path.join(self.path_to_script, "xVASynthText.json")
         self.persona_settings = ["My name is Bob.", "I am a skooma dealer.", "I am addicted to skooma.", "I am an imperial male.", "I live in the land of Skyrim.", "I live in the village of Riverwood",".done"]
@@ -58,10 +62,17 @@ class InteractiveEnvironment(BaseEnvironment):
 
             if isinstance(agent, PromptAgent):
                 user_name, bot_name = pre_dialog_output
-                user_message = cinput(f"[{user_name.upper()}]: ",
-                                      color=self.user_color)
+            for j in range(self.PROMPT_LIMIT):
+                guess = self.recognize_speech_from_mic(self.recognizer, self.microphone)
+                if guess["transcription"]:
+                    break
+                if not guess["success"]:
+                    break
+
+            if guess["error"]:
+                user_message = guess["error"]
             else:
-                user_message = cinput("[USER]: ", color=self.user_color)
+                user_message = guess["transcription"]
 
             if user_message == ".exit":
                 cprint(
@@ -114,12 +125,12 @@ class InteractiveEnvironment(BaseEnvironment):
                 "done": False,
                 "ffmpeg_pitchMult": 1,
                 "ffmpeg_tempo": 1.0,
-                "gameId": "overwatch",
+                "gameId": "skyrim",
                 "pad_end": 200,
                 "pad_start": 0,
                 "text": str({bot_message})[1:-1],
                 "use_ffmpeg": True,
-                "voiceId": "ow_dva",
+                "voiceId": "sk_maleslycynical",
                 "vol": 0.9990000396966935
             }
             logger = open(r"C:\Users\Thomas\AppData\Roaming\xVASynth\realTimeTTS\xVASynthText.json","w")
@@ -254,3 +265,31 @@ class InteractiveEnvironment(BaseEnvironment):
                         f"[TOPIC]: Wrong topic: {_topic}. Please enter validate topic.\n",
                         color=self.special_color,
                     )
+
+    def recognize_speech_from_mic(self, recognizer, microphone):
+
+        if not isinstance(recognizer, sr.Recognizer):
+            raise TypeError("`recognizer` must be `Recognizer` instance")
+
+        if not isinstance(microphone, sr.Microphone):
+            raise TypeError("`microphone` must be `Microphone` instance")
+
+        with microphone as source:
+            recognizer.adjust_for_ambient_noise(source)
+            audio = recognizer.listen(source)
+
+        response = {
+            "success": True,
+            "error": None,
+            "transcription": None
+        }
+
+        try:
+            response["transcription"] = recognizer.recognize_google(audio)
+        except sr.RequestError:
+            response["success"] = False
+            response["error"] = "API unavailable"
+        except sr.UnknownValueError:
+            response["error"] = "Unable to recognize speech"
+
+        return response
