@@ -36,8 +36,8 @@ class InteractiveEnvironment(BaseEnvironment):
         self.bot_color = bot_color
         self.special_color = special_color
         self.system_color = system_color
-        self.path_to_script = os.path.dirname(r"C:\Users\Thomas\AppData\Roaming\xVASynth\realTimeTTS")
-        self.my_log_filename = os.path.join(self.path_to_script, "xVASynthText.json")
+        #self.path_to_script = os.path.dirname(r"C:\Users\Thomas\AppData\Roaming\xVASynth\realTimeTTS")
+        #self.my_log_filename = os.path.join(self.path_to_script, "xVASynthText.json")
 
     def start(self, agent: BaseAgent):
 
@@ -116,12 +116,12 @@ class InteractiveEnvironment(BaseEnvironment):
                 "gameId": "overwatch",
                 "pad_end": 200,
                 "pad_start": 0,
-                "text": str({bot_message}),
+                "text": str({bot_message})[1:-1],
                 "use_ffmpeg": True,
                 "voiceId": "ow_dva",
                 "vol": 0.9990000396966935
             }
-            logger = open(self.my_log_filename,"w")
+            logger = open(r"C:\Users\Thomas\AppData\Roaming\xVASynth\realTimeTTS\xVASynthText.json","w")
             logger.write(json.dumps(xVAJsonText,indent=4))
             logger.close()
 
