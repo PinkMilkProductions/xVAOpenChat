@@ -133,7 +133,7 @@ class InteractiveEnvironment(BaseEnvironment):
                 "voiceId": "sk_maleslycynical",
                 "vol": 0.9990000396966935
             }
-            logger = open(r"C:\Users\Thomas\AppData\Roaming\xVASynth\realTimeTTS\xVASynthText.json","w")
+            logger = open(r"F:\SteamLibrary\steamapps\common\SkyrimVR\Data\Sound\fx\ConvAiFollower\xVASynthText.json","w")
             logger.write(json.dumps(xVAJsonText,indent=4))
             logger.close()
 
